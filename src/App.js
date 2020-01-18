@@ -1,26 +1,75 @@
 import React from 'react';
-import logo from './logo.svg';
+import ReactDOM from 'react-dom';
+import * as serviceWorker from './serviceWorker';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class Counter extends React.Component {
+  constructor(props) {
+      super(props);
+      this.addOne = this.addOne.bind(this);
+      this.minnusOne = this.minnusOne.bind(this);
+      this.handleReset = this.handleReset.bind(this);
+      this.state = {
+        title:'Welcome to Counter Example App',
+        count : 0
+      }
+  }
+
+  componentDidMount () {
+    try{
+      const stringCount = localStorage.getItem('count')
+      const count = parseInt(stringCount, 10)
+      if (!isNaN(count)){
+        this.setState(() => ({count}));
+      }
+    }
+    catch(e){
+
+    }
+  }
+
+  componentDidUpdate(prevState, prevProps) {
+    if (prevState.count !== this.state.count){
+        localStorage.setItem('count', this.state.count)
+    }
+  }
+
+  addOne () {
+    this.setState( (prevState) => {
+      return {
+        count : prevState.count + 1
+      }
+    }); 
+  }
+  minnusOne () {
+    this.setState( (prevState) => {
+      return {
+        count : prevState.count - 1
+      }
+    });
+  }
+  handleReset () {
+    this.setState( () => {
+      return {
+        count : 0
+      }
+    });
+  }
+
+  render() {
+    return (
+      <center>
+        <div>
+        <h1>{this.state.title}</h1>
+        <h2>Count: {this.state.count}</h2>
+        <button onClick={this.addOne}>+1</button>
+        <button onClick={this.minnusOne}>-1</button>
+        <button onClick={this.handleReset}>reset</button>
+        </div>
+      </center>
+    )
+  }
 }
 
-export default App;
+ReactDOM.render(<Counter />, document.getElementById('root'));
+serviceWorker.register();
